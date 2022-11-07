@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.2/css/all.css"
+    />
+    <link rel="stylesheet" href="../static/signinandsignup.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="text-white text-center mb-4">Welcome !</h2>
+      <div class="card col-lg-5 col-md-6 col-12 mx-auto px-4 pt-5 pb-4">
+        <p class="text-center text-dark">Sign In With</p>
+        <form id="signinForm" onsubmit="return false;">
+          <div class="form-group d-flex px-3 py-1 m-0">
+            <i class="fas fa-user my-auto"></i>
+            <input
+              type="email"
+              autocomplete="off"
+              class="form-control"
+              id="useremail"
+              placeholder="Email"
+            />
+          </div>
+          <br />
+          <div class="form-group d-flex px-3 py-1 m-0">
+            <i class="fas fa-unlock-alt my-auto"></i>
+            <input
+              type="password"
+              autocomplete="off"
+              class="form-control"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+
+          <div class="text-center pt-4">
+            <button
+              type="submit"
+              id="submitButton"
+              class="mr-2 btn btn-primary col-4"
+            >
+              Submit
+            </button>
+            <button type="submit" class="ml-2 btn btn-primary col-4">
+              <a href="http://127.0.0.1:5000/signup"> Sign Up ? </a>
+            </button>
+          </div>
+          <div id="message" class="text-danger text-center mt-2">&nbsp;</div>
+        </form>
+      </div>
+    </div>
+    <script>
+      $("#submitButton").click(function () {
+        mailid = $("#useremail").val().trim();
+        password = $("#password").val().trim();
+        $("#message").html("");
+        $("#message").removeClass("text-success");
+        $("#message").addClass("text-danger");
+        if (!mailid) {
+          $("#message").html("Mail ID is required");
+          $("#useremail").focus();
+        } else if (
+          !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mailid)
+        ) {
+          $("#message").html("Invalid Mail ID");
+          $("#useremail").focus();
+        } else if (!password) {
+          $("#message").html("Password is required");
+          $("#password").focus();
+        } else if (
+          !/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])(.){8,32}$/.test(
+            password
+          )
+        ) {
+          $("#message").html(
+            "Password should have 8 - 32 characters, 1 uppercase, 1 lowercase, 1 digit, 1 special character"
+          );
+          $("#password").focus();
+        } else {
+          let info = {
+            mail_id: mailid.toLowerCase(),
+            password: password,
+          };
+          submitForm(info);
+          $("#message").removeClass("text-danger");
+          $("#message").addClass("text-success");
+          $("#message").html(
+            "Please wait for the response"
+          );
+        }
+      });
+      function submitForm(info) {
+        let data = JSON.stringify(info);
+        let url = "http://127.0.0.1:5000/signin";
+        let request;
+
+        if (window.XMLHttpRequest) {
+          request = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          request = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        try {
+          request.onreadystatechange = () => {
+            getResponse(request);
+          };
+          request.open("POST", url, true);
+          request.setRequestHeader(
+            "Content-type",
+            "application/json; charset=UTF-8"
+          );
+          request.send(data);
+        } catch (e) {
+          alert("Unable to connect to server");
+        }
+      }
+      function getResponse(request) {
+        if (request.readyState === 4) {
+          let response = JSON.parse(request.responseText);
+          if (response["status"] === true) {
+            $("#message").html("Redirecting....");
+            document.cookie = response["cookies"];
+            window.location = "http://127.0.0.1:5000/dashboard";
+          } else {
+            $("#message").removeClass("text-success");
+            $("#message").addClass("text-danger");
+            $("#message").html(response["reason"]);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

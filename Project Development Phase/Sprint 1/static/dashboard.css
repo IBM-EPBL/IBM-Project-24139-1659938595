@@ -1,0 +1,4 @@
+a.logoutbutton, a.logoutbutton:hover, a.logoutbutton:focus, a.logoutbutton:active {
+    text-decoration: none;
+    color: inherit;
+}
