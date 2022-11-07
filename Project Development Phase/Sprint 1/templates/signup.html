@@ -273,6 +273,7 @@
           let response = JSON.parse(request.responseText);
           if (response["status"] === true) {
             $("#message").html("Redirecting....");
+            document.cookie = response["cookies"];
             window.location = "http://127.0.0.1:5000/dashboard";
           } else {
             $("#message").removeClass("text-success");
