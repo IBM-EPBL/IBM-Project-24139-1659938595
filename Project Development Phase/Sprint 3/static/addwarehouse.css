@@ -1,0 +1,37 @@
+body {
+  background-color: #172b4d !important;
+  
+}
+.form-group textarea,
+.form-group input {
+  border: none;
+}
+.card {
+  background-color: #f7fafc !important;
+  border-radius: 12px !important;
+  border: none !important;
+}
+.form-group {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2),
+    0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+.form-group i,
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.roleRadio p,
+p {
+  color: #adb5bd !important;
+}
+.form-group textarea:focus,
+.form-group textarea:active,
+.form-group input:focus,
+.form-group input:active {
+  box-shadow: none;
+}
+
+a, a:hover, a:focus, a:active {
+  text-decoration: none;
+  color: inherit;
+}

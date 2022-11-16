@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.2/css/all.css"
+    />
+    <link rel="stylesheet" href="../static/dashboard.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div
+      class="topNav d-flex flex-column flex-md-row justify-content-between align-items-center p-3 px-md-4 mb-3 text-white border-bottom shadow-sm"
+    >
+      <div class="h5 my-2 mr-md-auto font-weight-normal">
+        Inventory Management System
+      </div>
+      <nav class="my-2 my-md-0 mr-md-3">
+        {% if 'retailer' in user_info['role'] %}
+        <a
+          class="btn btn-outline-primary rounded"
+          href="http://127.0.0.1:5000/dashboard/addwarehouse"
+          ><i class="fas fa-plus my-auto mr-2"></i>Add Warehouses</a
+        >
+        {% endif %}
+
+        <a
+          class="btn btn-outline-primary rounded"
+          href="http://127.0.0.1:5000/dashboard/profile"
+          ><i class="fas fa-user my-auto mr-3"></i>View Profile</a
+        >
+        <a class="btn btn-outline-danger" href="http://127.0.0.1:5000/logout"
+          >Logout</a
+        >
+      </nav>
+    </div>
+    <div class="d-flex">
+      <div>
+        <h3 class="pl-5 m-5 mb-2">Dashboard</h3>
+        <h5 class="pl-5 m-5 mt-0">Hi, {{user_info['person_name']}}</h5>
+      </div>
+      <div class="w-100">
+        <h4 class="m-5 text-center">
+          Here are the things going on with your inventory
+          {{user_info['inventory_name']}}
+        </h4>
+      </div>
+    </div>
+  </body>
+</html>

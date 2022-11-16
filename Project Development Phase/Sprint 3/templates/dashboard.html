@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.2/css/all.css"
+    />
+    <link rel="stylesheet" href="../static/dashboard.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div
+      class="topNav d-flex flex-column flex-md-row justify-content-between align-items-center p-3 px-md-4 mb-3 text-white border-bottom shadow-sm"
+    >
+      <div class="h5 my-2 mr-md-auto font-weight-normal">
+        Inventory Management System
+      </div>
+      <nav class="my-2 my-md-0 mr-md-3">
+        {% if 'retailer' in user_info['role'] %}
+        <a
+          class="btn btn-outline-primary rounded"
+          href="http://127.0.0.1:5000/dashboard/addwarehouse"
+          ><i class="fas fa-plus my-auto mr-2"></i>Add Warehouses</a
+        >
+        {% endif %}
+
+        <a
+          class="btn btn-outline-primary rounded"
+          href="http://127.0.0.1:5000/dashboard/profile"
+          ><i class="fas fa-user my-auto mr-3"></i>View Profile</a
+        >
+        <a class="btn btn-outline-danger" href="http://127.0.0.1:5000/logout"
+          >Logout</a
+        >
+      </nav>
+    </div>
+    <div class="d-flex">
+      <div>
+        <h3 class="pl-5 m-5 mb-2">Dashboard</h3>
+        <h5 class="pl-5 m-5 mt-0">Hi, {{user_info['person_name']}}</h5>
+      </div>
+      <div class="w-100">
+        <h4 class="m-5 text-center">
+          Here are the things going on with your inventory
+          {{user_info['inventory_name']}}
+        </h4>
+        <h5 class="m-5 text-center">Warehouses</h5>
+        {%for warehouse_id,warehouse_details in warehouses_info.items()%}
+        <h2><b>{{warehouse_details['warehouse_name']}}</b></h2>
+        {% if 'retailer' in user_info['role'] %}
+        <a
+          class="btn btn-outline-primary"
+          href="http://127.0.0.1:5000/dashboard/addproduct?warehouse_id={{warehouse_details['warehouse_id']}}"
+          >Add New Products</a
+        >
+        {% endif %}
+        <h4 class="ml-5">Location : {{warehouse_details['location']}}</h4>
+        <h4 class="ml-5">Description : {{warehouse_details['description']}}</h4>
+
+        <table class="table text-center">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Product Name</th>
+              <th scope="col">Count</th>
+              <th scope="col">Threshold Count</th>
+              <th scope="col">Edit Quantity</th>
+              <th scope="col" colspan="2">Edit Options</th>
+              <th scope="col" style="min-width: 150px">Response</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for product_id,product_details in
+            warehouse_details['products'].items() %}
+            <tr>
+              <td>{{product_details['product_name']}}</td>
+              <td>
+                <span id="count-{{product_details['product_id']}}"
+                  >{{product_details['product_count']}}</span
+                >
+              </td>
+              <td>
+                <span id="thresholdCount-{{product_details['product_id']}}"
+                  >{{product_details['threshold_count']}}</span
+                >
+              </td>
+              <td>
+                <input
+                  type="number"
+                  id="input-{{product_details['product_id']}}"
+                />
+              </td>
+              <td>
+                <span
+                  class="badge badge-success"
+                  onclick="editProductsCount('{{product_id}}','add')"
+                  >Add</span
+                >
+              </td>
+              <td>
+                <span
+                  class="badge badge-danger"
+                  onclick="editProductsCount('{{product_id}}','remove')"
+                  >Remove</span
+                >
+              </td>
+              <td>
+                <div
+                  id="message-{{product_details['product_id']}}"
+                  class="text-danger text-center mt-2"
+                >
+                  &nbsp;
+                </div>
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+        </table>
+
+        {%endfor%}
+      </div>
+    </div>
+  </body>
+  <script>
+    const editProductsCount = (product_id, action) => {
+      let count = $("#input-" + product_id).val();
+      $("#message-" + product_id).html("");
+      $("#message-" + product_id).removeClass("text-success");
+      $("#message-" + product_id).addClass("text-danger");
+      if (!count) {
+        $("#message-" + product_id).html("Enter quantity");
+        $("#count-" + product_id).focus();
+      } else if (!/^\d*$/.test(count)) {
+        $("#message-" + product_id).html("Invalid quantity");
+        $("#count-" + product_id).focus();
+      } else if (count === "0") {
+        $("#message-" + product_id).html("Invalid quantity");
+        $("#count-" + product_id).focus();
+      } else {
+        let data = {
+          action: action,
+          product_id: product_id,
+          inventory_id: '{{user_info["inventory_id"]}}',
+          count: count,
+        };
+        $("#message-" + product_id).removeClass("text-danger");
+        $("#message-" + product_id).addClass("text-success");
+        $("#message-" + product_id).html("Please wait for the response");
+        submitForm(data);
+      }
+    };
+    function submitForm(info) {
+      let data = JSON.stringify(info);
+      let url = "http://127.0.0.1:5000/dashboard/editproductdetails";
+      let request;
+
+      if (window.XMLHttpRequest) {
+        request = new XMLHttpRequest();
+      } else if (window.ActiveXObject) {
+        request = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      try {
+        request.onreadystatechange = () => {
+          getResponse(request, info);
+        };
+        request.open("POST", url, true);
+        request.setRequestHeader(
+          "Content-type",
+          "application/json; charset=UTF-8"
+        );
+        request.send(data);
+      } catch (e) {
+        alert("Unable to connect to server");
+      }
+    }
+    function getResponse(request, info) {
+      if (request.readyState === 4) {
+        let response = JSON.parse(request.responseText);
+        if (response["status"] === true) {
+          $("#message-" + info.product_id).html(
+            "Product details edited successfully"
+          );
+          $("#count-" + info.product_id).html(response["new_count"]);
+        } else {
+          $("#message-" + info.product_id).removeClass("text-success");
+          $("#message-" + info.product_id).addClass("text-danger");
+          $("#message-" + info.product_id).html(response["reason"]);
+        }
+      }
+    }
+  </script>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.2/css/all.css"
+    />
+    <link rel="stylesheet" href="../../static/editprofile.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body onload="setInventoryNameField()">
+    <div
+      class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 px-md-4 mb-3 text-white border-bottom shadow-sm"
+    >
+      <div class="h5 my-2 mr-md-auto font-weight-normal">
+        Inventory Management System
+      </div>
+      <nav class="my-2 my-md-0 mr-md-3">
+        <a
+          class="btn btn-outline-primary rounded mr-2"
+          href="javascript:history.back()"
+          >Back</a
+        >
+        <a class="btn btn-outline-danger" href="http://127.0.0.1:5000/logout"
+          >Logout</a
+        >
+      </nav>
+    </div>
+    <h2 class="text-white text-center mb-4">Edit Profile</h2>
+    <h6 class="text-center text-danger">{{reason}}</h6>
+    <div class="card col-lg-5 col-md-6 col-12 mx-auto px-4 pt-5 pb-4">
+      <form onsubmit="return false;">
+        <div class="form-group d-flex px-3 py-1 m-0">
+          <i class="fas fa-user my-auto"></i>
+          <input
+            type="text"
+            autocomplete="off"
+            class="form-control"
+            id="person_name"
+            aria-describedby="emailHelp"
+            value="{{response['person_name']}}"
+            placeholder="Name"
+          />
+        </div>
+        <br />
+        <div class="form-group d-flex px-3 py-1 m-0">
+          <i class="fas fa-envelope my-auto"></i>
+          <input
+            type="email"
+            autocomplete="off"
+            class="form-control"
+            id="mail_id"
+            value="{{response['mail_id']}}"
+            placeholder="Email"
+          />
+        </div>
+        <br />
+        <div class="form-group d-flex px-3 py-1 m-0">
+          <i class="fas fa-unlock-alt my-auto"></i>
+          <input
+            type="password"
+            autocomplete="off"
+            class="form-control"
+            id="password"
+            placeholder="New Password"
+          />
+        </div>
+        <br />
+        <div class="form-group d-flex px-3 py-1 m-0">
+          <i class="fas fa-unlock-alt my-auto"></i>
+          <input
+            type="password"
+            autocomplete="off"
+            class="form-control"
+            id="confirmPassword"
+            placeholder="Confirm Password"
+          />
+        </div>
+        <br />
+        <div id="inventoryNameHolder" class="d-none form-group px-3 py-1 m-0">
+          <i class="fas fa-box my-auto"></i>
+          <input
+            type="text"
+            autocomplete="off"
+            class="form-control"
+            id="inventoryName"
+            value="{{response['inventory_name']}}"
+            placeholder="Inventory Name"
+          />
+        </div>
+
+        <div class="text-center pt-4">
+          <button
+            type="submit"
+            id="submitButton"
+            class="mr-2 btn btn-primary col-4"
+          >
+            Update
+          </button>
+        </div>
+        <div id="message" class="text-success text-center mt-2">
+          &nbsp;Not all fields are mandatory
+        </div>
+      </form>
+    </div>
+    <script>
+      let current_mail_id = "{{response['mail_id']}}";
+      function updateCurrentMailID() {
+        current_mail_id = $("#mail_id").val().trim().toLowerCase();
+      }
+      function setInventoryNameField() {
+        if ("{{response['role']}}" === "retailer") {
+          $("#inventoryNameHolder").removeClass("d-none");
+          $("#inventoryNameHolder").addClass("d-flex");
+        }
+      }
+
+      $("#submitButton").click(function () {
+        let person_name = $("#person_name").val().trim();
+        let mail_id = $("#mail_id").val().trim();
+        let password = $("#password").val().trim();
+        let confirmPassword = $("#confirmPassword").val().trim();
+        let inventoryName = $("#inventoryName").val().trim();
+
+        $("#message").html("");
+        $("#message").removeClass("text-success");
+        $("#message").addClass("text-danger");
+
+        if (person_name.length < 4 || person_name.length > 20) {
+          $("#message").html("Name should have 4 - 20 characters");
+          $("#name").focus();
+        } else if (
+          !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail_id) ||
+          !mail_id.length > 30
+        ) {
+          $("#message").html("Invalid Mail ID");
+          $("#useremail").focus();
+        } else if (
+          password &&
+          !/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])(.){8,32}$/.test(
+            password
+          )
+        ) {
+          $("#message").html(
+            "Password should have 8 - 32 characters, 1 uppercase, 1 lowercase, 1 digit, 1 special character"
+          );
+          $("#password").focus();
+        } else if (
+          (password || confirmPassword) &&
+          password !== confirmPassword
+        ) {
+          $("#message").html("Passwords not matching");
+          $("#confirmPassword").focus();
+        } else if (inventoryName.length < 4 || inventoryName.length > 30) {
+          $("#message").html("Inventory name should have 4 - 30 characters");
+          $("#inventoryName").focus();
+        } else {
+          let data = {
+            current_mail_id: current_mail_id,
+          };
+          if (person_name !== "{{response['person_name']}}") {
+            data["name"] = person_name;
+          }
+          if (mail_id.toLowerCase() !== current_mail_id) {
+            data["mail_id"] = mail_id.toLowerCase();
+          }
+          if (password) {
+            data["password"] = password;
+          }
+          if (inventoryName !== "{{response['inventory_name']}}") {
+            data["inventory_name"] = inventoryName;
+          }
+          if (Object.keys(data).length == 1) {
+            $("#message").html("No changes found");
+          } else {
+            $("#message").removeClass("text-danger");
+            $("#message").addClass("text-success");
+            $("#message").html("Please wait for the response");
+            updateCurrentMailID();
+            submitForm(data);
+          }
+        }
+      });
+      function submitForm(info) {
+        let data = JSON.stringify(info);
+        let url = "http://127.0.0.1:5000/dashboard/profile/editprofile";
+        let request;
+
+        if (window.XMLHttpRequest) {
+          request = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          request = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        try {
+          request.onreadystatechange = () => {
+            getResponse(request);
+          };
+          request.open("POST", url, true);
+          request.setRequestHeader(
+            "Content-type",
+            "application/json; charset=UTF-8"
+          );
+          request.send(data);
+        } catch (e) {
+          alert("Unable to connect to server");
+        }
+      }
+      function getResponse(request) {
+        if (request.readyState === 4) {
+          let response = JSON.parse(request.responseText);
+          if (response["status"] === true) {
+            $("#message").html("Profile updated successfully");
+          } else {
+            $("#message").removeClass("text-success");
+            $("#message").addClass("text-danger");
+            $("#message").html(response["reason"]);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
