@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.2/css/all.css"
+    />
+    <link rel="stylesheet" href="../static/signinandsignup.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="text-white text-center mb-4">Welcome !</h2>
+      <div class="card col-lg-5 col-md-6 col-12 mx-auto px-4 pt-5 pb-4">
+        <p class="text-center text-dark">Sign Up With</p>
+        <form id="signupForm" onsubmit="return false;">
+          <div class="form-group d-flex px-3 py-1 m-0">
+            <i class="fas fa-user my-auto"></i>
+            <input
+              type="text"
+              autocomplete="off"
+              class="form-control"
+              id="name"
+              aria-describedby="emailHelp"
+              placeholder="Name"
+            />
+          </div>
+          <br />
+          <div class="form-group d-flex px-3 py-1 m-0">
+            <i class="fas fa-envelope my-auto"></i>
+            <input
+              type="email"
+              autocomplete="off"
+              class="form-control"
+              id="useremail"
+              placeholder="Email"
+            />
+          </div>
+          <br />
+          <div class="form-group d-flex px-3 py-1 m-0">
+            <i class="fas fa-unlock-alt my-auto"></i>
+            <input
+              type="password"
+              autocomplete="off"
+              class="form-control"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+          <br />
+          <div class="form-group d-flex px-3 py-1 m-0">
+            <i class="fas fa-unlock-alt my-auto"></i>
+            <input
+              type="password"
+              autocomplete="off"
+              class="form-control"
+              id="confirmPassword"
+              placeholder="Confirm Password"
+            />
+          </div>
+          <br />
+          <div class="roleRadio pl-1">
+            <p>Role :</p>
+            <div>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input
+                type="radio"
+                id="retailer"
+                name="role"
+                value="retailer"
+                onclick="roleSelectHandler()"
+              />
+              <label for="retailer">Retailer</label><br />
+            </div>
+            <div>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input
+                type="radio"
+                id="user"
+                name="role"
+                value="user"
+                onclick="roleSelectHandler()"
+              />
+              <label for="user">User</label><br />
+            </div>
+          </div>
+          <br />
+          <div id="postRoleSelection" class="form-group d-none px-3 py-1 m-0">
+            <div id="adminRoleSelected" class="d-none">
+              <i class="fas fa-box my-auto"></i>
+              <input
+                type="text"
+                autocomplete="off"
+                class="form-control"
+                id="inventoryName"
+                placeholder="Inventory Name"
+              />
+            </div>
+            <div id="userRoleSelected" class="d-none">
+              <i class="fas fa-box my-auto"></i>
+              <input
+                type="number"
+                autocomplete="off"
+                class="form-control w-100"
+                id="inventoryId"
+                placeholder="Inventory Id"
+              />
+            </div>
+          </div>
+
+          <div class="text-center pt-4">
+            <button
+              type="submit"
+              id="submitButton"
+              class="mr-2 btn btn-primary col-4"
+            >
+              Submit
+            </button>
+            <button type="submit" class="ml-2 btn btn-primary col-4">
+              <a href="http://127.0.0.1:5000/signin"> Sign In ? </a>
+            </button>
+          </div>
+          <div id="message" class="text-danger text-center mt-2">&nbsp;</div>
+        </form>
+      </div>
+    </div>
+    <script>
+      $("#submitButton").click(function () {
+        let name = $("#name").val().trim();
+        let mailid = $("#useremail").val().trim();
+        let password = $("#password").val().trim();
+        let confirmPassword = $("#confirmPassword").val().trim();
+        let role = $("input[name=role]:checked", "#signupForm").val();
+        let inventoryId = $("#inventoryId").val().trim();
+        let inventoryName = $("#inventoryName").val().trim();
+
+        $("#message").html("");
+        $("#message").removeClass("text-success");
+        $("#message").addClass("text-danger");
+        if (!name) {
+          $("#message").html("Name is required");
+          $("#name").focus();
+        } else if (name.length < 4 || name.length > 20) {
+          $("#message").html("Name should have 4 - 20 characters");
+          $("#name").focus();
+        } else if (!mailid) {
+          $("#message").html("Mail ID is required");
+          $("#useremail").focus();
+        } else if (
+          !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mailid) ||
+          !mailid.length > 30
+        ) {
+          $("#message").html("Invalid Mail ID");
+          $("#useremail").focus();
+        } else if (!password) {
+          $("#message").html("Password is required");
+          $("#password").focus();
+        } else if (
+          !/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])(.){8,32}$/.test(
+            password
+          )
+        ) {
+          $("#message").html(
+            "Password should have 8 - 32 characters, 1 uppercase, 1 lowercase, 1 digit, 1 special character"
+          );
+          $("#password").focus();
+        } else if (password !== confirmPassword) {
+          $("#message").html("Passwords not matching");
+          $("#confirmPassword").focus();
+        } else if (!role) {
+          $("#message").html("Select a role");
+        } else if (role === "retailer") {
+          if (!inventoryName) {
+            $("#message").html("Inventory Name is required");
+            $("#inventoryName").focus();
+          } else if (inventoryName.length < 4 || inventoryName.length > 30) {
+            $("#message").html("Inventory name should have 4 - 30 characters");
+            $("#inventoryName").focus();
+          } else {
+            $("#message").removeClass("text-danger");
+            $("#message").addClass("text-success");
+            $("#message").html("Please wait for the response");
+
+            let info = {
+              name: name,
+              mail_id: mailid.toLowerCase(),
+              password: password,
+              role: role,
+              inventory_id_or_name:
+                role === "retailer" ? inventoryName : Number(inventoryId),
+            };
+            submitForm(info);
+          }
+        } else if (role === "user") {
+          if (!inventoryId) {
+            $("#message").html("Inventory ID is required");
+            $("#inventoryId").focus();
+          } else if (inventoryId > 9999) {
+            $("#message").html("Invalid inventory ID");
+            $("#inventoryId").focus();
+          } else {
+            $("#message").removeClass("text-danger");
+            $("#message").addClass("text-success");
+            $("#message").html("Please wait for the response");
+
+            let info = {
+              name: name,
+              mail_id: mailid.toLowerCase(),
+              password: password,
+              role: role,
+              inventory_id_or_name:
+                role === "retailer" ? inventoryName : Number(inventoryId),
+            };
+            submitForm(info);
+          }
+        }
+      });
+
+      function roleSelectHandler() {
+        let role = $("input[name=role]:checked", "#signupForm").val();
+        $("#postRoleSelection").removeClass("d-none");
+        $("#postRoleSelection").addClass("d-flex");
+        if (role === "retailer") {
+          $("#userRoleSelected").addClass("d-none");
+          $("#userRoleSelected").removeClass("d-flex");
+          $("#adminRoleSelected").removeClass("d-none");
+          $("#adminRoleSelected").addClass("d-flex");
+        } else if (role === "user") {
+          $("#adminRoleSelected").addClass("d-none");
+          $("#adminRoleSelected").removeClass("d-flex");
+          $("#userRoleSelected").removeClass("d-none");
+          $("#userRoleSelected").addClass("d-flex");
+        } else {
+          $("#postRoleSelection").addClass("d-none");
+          $("#adminRoleSelected").addClass("d-none");
+          $("#userRoleSelected").addClass("d-none");
+        }
+      }
+      function submitForm(info) {
+        let data = JSON.stringify(info);
+        let url = "http://127.0.0.1:5000/signup";
+        let request;
+
+        if (window.XMLHttpRequest) {
+          request = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          request = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        try {
+          request.onreadystatechange = () => {
+            getResponse(request);
+          };
+          request.open("POST", url, true);
+          request.setRequestHeader(
+            "Content-type",
+            "application/json; charset=UTF-8"
+          );
+          request.send(data);
+        } catch (e) {
+          alert("Unable to connect to server");
+        }
+      }
+      function getResponse(request) {
+        if (request.readyState === 4) {
+          let response = JSON.parse(request.responseText);
+          if (response["status"] === true) {
+            $("#message").html("Redirecting....");
+            window.location = "http://127.0.0.1:5000/dashboard";
+          } else {
+            $("#message").removeClass("text-success");
+            $("#message").addClass("text-danger");
+            $("#message").html(response["reason"]);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
