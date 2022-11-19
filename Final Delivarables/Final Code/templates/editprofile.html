@@ -45,7 +45,7 @@
           href="javascript:history.back()"
           >Back</a
         >
-        <a class="btn btn-outline-danger mx-1" href="http://127.0.0.1:5000/logout"
+        <a class="btn btn-outline-danger mx-1" href="/logout"
           >Logout</a
         >
       </nav>
@@ -207,7 +207,7 @@
       });
       function submitForm(info) {
         let data = JSON.stringify(info);
-        let url = "http://127.0.0.1:5000/dashboard/profile/editprofile";
+        let url = "/dashboard/profile/editprofile";
         let request;
 
         if (window.XMLHttpRequest) {

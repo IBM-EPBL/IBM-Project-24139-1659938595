@@ -45,7 +45,7 @@
           href="javascript:history.back()"
           >Back</a
         >
-        <a class="btn btn-outline-danger mx-1" href="http://127.0.0.1:5000/logout"
+        <a class="btn btn-outline-danger mx-1" href="/logout"
           >Logout</a
         >
       </nav>
@@ -146,7 +146,7 @@
       });
       function submitForm(info) {
         let data = JSON.stringify(info);
-        let url = "http://127.0.0.1:5000/dashboard/addproduct";
+        let url = "/dashboard/addproduct";
         let request;
 
         if (window.XMLHttpRequest) {

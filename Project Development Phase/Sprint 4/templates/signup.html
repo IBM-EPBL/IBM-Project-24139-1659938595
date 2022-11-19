@@ -125,7 +125,7 @@
               Submit
             </button>
             <button type="submit" class="ml-2 btn btn-primary col-4">
-              <a href="http://127.0.0.1:5000/signin"> Sign In ? </a>
+              <a href="/signin"> Sign In ? </a>
             </button>
           </div>
           <div id="message" class="text-danger text-center mt-2">&nbsp;</div>
@@ -246,7 +246,7 @@
       }
       function submitForm(info) {
         let data = JSON.stringify(info);
-        let url = "http://127.0.0.1:5000/signup";
+        let url = "/signup";
         let request;
 
         if (window.XMLHttpRequest) {
@@ -273,7 +273,7 @@
           let response = JSON.parse(request.responseText);
           if (response["status"] === true) {
             $("#message").html("Redirecting....");
-            window.location = "http://127.0.0.1:5000/dashboard";
+            window.location = "/dashboard";
           } else {
             $("#message").removeClass("text-success");
             $("#message").addClass("text-danger");

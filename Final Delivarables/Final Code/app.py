@@ -2,6 +2,7 @@
 from flask import *
 import re
 import os
+from flask_cors import CORS, cross_origin
 from dbactions.signup import create_retailer_account,create_user_account 
 from dbactions.signin import validate_user
 from dbactions.profile import get_user_profile_details, update_profile
@@ -12,6 +13,8 @@ from flask_mail import Mail
 from dotenv import load_dotenv
 
 app = Flask(__name__)  
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 mail = Mail(app)
 
 load_dotenv()
@@ -23,12 +26,14 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-@app.route('/signin',methods = ['POST', 'GET'])  
+@app.route('/',methods = ['GET'])  
+@app.route('/signin',methods = ['POST', 'GET'])
+@cross_origin()  
 def sign_in():
       if request.method == 'GET':
             mail_id = request.cookies.get('mail_id')
             if mail_id != None:
-                  return redirect("http://127.0.0.1:5000/dashboard",code=302)
+                  return redirect("/dashboard",code=302)
             else:
                   return render_template('signin.html')
       elif  request.method == 'POST':
@@ -39,12 +44,13 @@ def sign_in():
                   resp.set_cookie("role",'retailer' if response['role_id'] == 1 else 'user')
             return(resp)
 
-@app.route('/signup',methods = ['POST', 'GET'])  
+@app.route('/signup',methods = ['POST', 'GET']) 
+@cross_origin() 
 def sign_up():
       if request.method == 'GET':   
             mail_id = request.cookies.get('mail_id')
             if mail_id != None:
-                  return redirect("http://127.0.0.1:5000/dashboard",code=302)
+                  return redirect("/dashboard",code=302)
             else:
                   return render_template('signup.html')
       elif  request.method == 'POST':
@@ -59,14 +65,16 @@ def sign_up():
             return(resp)
 
 
-@app.route('/logout',methods = ['GET'])  
+@app.route('/logout',methods = ['GET'])
+@cross_origin()  
 def logout():
       if request.method == 'GET':  
-            resp = make_response(redirect("http://127.0.0.1:5000/signin",code=302))
+            resp = make_response(redirect("/signin",code=302))
             resp.set_cookie('mail_id', '', expires=0)
             return(resp)
 
-@app.route('/dashboard',methods = ['GET'])  
+@app.route('/dashboard',methods = ['GET'])
+@cross_origin()  
 def dashboard():
       if request.method == 'GET':  
             mail_id = request.cookies.get('mail_id')
@@ -83,10 +91,11 @@ def dashboard():
                   return render_template("dashboard.html",user_info=user_info,mail_id=user_info['mail_id'],warehouses_info=warehouses_info)
                   
             else:
-                  return redirect("http://127.0.0.1:5000/signin",code=302)
+                  return redirect("/signin",code=302)
 
-@app.route('/dashboard/addwarehouse',methods = ['GET','POST'])  
-def add_new_warehouse():
+@app.route('/dashboard/addwarehouse',methods = ['GET','POST'])
+@cross_origin()  
+def add_warehouse():
       mail_id = request.cookies.get('mail_id')
       role = request.cookies.get('role')
       if mail_id != None:
@@ -97,12 +106,13 @@ def add_new_warehouse():
                         response = add_new_warehouse(mail_id,request.json['warehouse_name'],request.json['location'],request.json['description'])
                         return(response)    
             else:
-                  return redirect("http://127.0.0.1:5000/dashboard",code=302)
+                  return redirect("/dashboard",code=302)
       else:   
-            return redirect("http://127.0.0.1:5000/signin",code=302)
+            return redirect("/signin",code=302)
       
 
-@app.route('/dashboard/addproduct',methods = ['GET','POST'])  
+@app.route('/dashboard/addproduct',methods = ['GET','POST']) 
+@cross_origin() 
 def add_new_product():
       mail_id = request.cookies.get('mail_id')
       role = request.cookies.get('role')
@@ -114,16 +124,17 @@ def add_new_product():
                         if  warehouse_id and warehouse_id_regex.search(warehouse_id) :   
                               return render_template("addProducts.html",warehouse_id=warehouse_id)
                         else:
-                              return redirect("http://127.0.0.1:5000/dashboard",code=302)
+                              return redirect("/dashboard",code=302)
                   elif  request.method == 'POST':
                         response = add_product(mail_id,int(request.json['warehouse_id']),request.json['product_name'],request.json['count'],request.json['threshold'])
                         return(response)    
             else:
-                  return redirect("http://127.0.0.1:5000/dashboard",code=302)
+                  return redirect("/dashboard",code=302)
       else:   
-            return redirect("http://127.0.0.1:5000/signin",code=302)
+            return redirect("/signin",code=302)
 
-@app.route('/dashboard/editproductdetails',methods = ['POST'])  
+@app.route('/dashboard/editproductdetails',methods = ['POST']) 
+@cross_origin() 
 def edit_product_details():
       mail_id = request.cookies.get('mail_id')
       if mail_id != None:
@@ -131,12 +142,13 @@ def edit_product_details():
                   response = edit_product_count(request.json['inventory_id'],request.json['product_id'],int(request.json['count']),request.json['action'],mail)
                   return(response)
             else:
-                  return redirect("http://127.0.0.1:5000/dashboard",code=302)
+                  return redirect("/dashboard",code=302)
       else:   
-            return redirect("http://127.0.0.1:5000/signin",code=302)
+            return redirect("/signin",code=302)
 
 
 @app.route('/dashboard/profile',methods = ['GET'])  
+@cross_origin()
 def profile():
       if request.method == 'GET':  
             mail_id = request.cookies.get('mail_id')
@@ -144,14 +156,15 @@ def profile():
                   response = get_user_profile_details(mail_id)
                   return(render_template('profile.html',response=response['user_info'],reason=response['reason']))
             else:
-                  return redirect("http://127.0.0.1:5000/signin",code=302)
+                  return redirect("/signin",code=302)
       
-@app.route('/dashboard/profile/editprofile',methods = ['GET','POST'])  
+@app.route('/dashboard/profile/editprofile',methods = ['GET','POST'])
+@cross_origin()  
 def edit_profile():
       mail_id = request.cookies.get('mail_id')
       
       if mail_id == None:
-            return redirect("http://127.0.0.1:5000/signin",code=302)
+            return redirect("/signin",code=302)
       else:
             if request.method == 'GET':  
                   response = get_user_profile_details(mail_id)
@@ -165,4 +178,4 @@ def edit_profile():
 
 
 if __name__ == '__main__':  
-   app.run(debug = True)  
+   app.run(debug=True)  
